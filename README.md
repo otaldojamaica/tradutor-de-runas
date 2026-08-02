@@ -50,18 +50,19 @@ Install the [Live Server](https://marketplace.visualstudio.com/items?itemName=ri
 tradutor-de-runas/
 ├── index.html          # markup — translator view + settings modal
 ├── style.css           # all styling
+├── logo.png            # site logo (replaces the text title)
+├── background.jpeg     # default site + translator-area background texture
+├── modal-paper.jpg      # translucent parchment texture behind the settings modal
 ├── fonts/              # bundled .otf font files
 │   ├── Bring Me A Helicopter.otf
 │   ├── EBGaramond-Regular.otf
 │   └── Super Bouncer.otf
 └── js/
-    ├── main.js         # boot sequence — loads state, wires modules
+    ├── main.js         # boot sequence — wires up all modules
     ├── translator.js   # language rules, tokeniser, fraction renderer
     ├── fonts.js        # font picker dropdown and @font-face management
     ├── settings.js     # settings modal (font upload, backgrounds, reset)
-    ├── glyphs.js       # glyph data store (used by settings JSON import)
-    ├── storage.js      # localStorage abstraction
-    └── tabs.js         # tab switching
+    └── storage.js      # storage abstraction (localStorage on GitHub Pages)
 ```
 
 ---
@@ -209,7 +210,7 @@ Three fonts are bundled in the `fonts/` directory and appear in the dropdown pic
 - **EB Garamond** — classic old-style serif
 - **Super Bouncer** — rounded, playful
 
-Additional `.otf` fonts can be uploaded via the settings modal (⚙️ → Adicionar fonte). Uploaded fonts are added to the dropdown and persist across page reloads via localStorage. The "Limpar Fontes" button in the settings modal removes all uploaded fonts and reverts the dropdown to the three bundled options.
+Additional `.otf` fonts can be uploaded via the settings modal (⚙️ → Adicionar fonte). Uploaded fonts are added to the dropdown and persist across page reloads via storage. The "Limpar Fontes" button removes every font from the dropdown — bundled and uploaded alike — leaving only "Padrão (Arial)"; this is also remembered across reloads. The "Redefinir ao padrão" button (which also clears background images) brings the three bundled fonts back.
 
 ---
 
@@ -218,17 +219,17 @@ Additional `.otf` fonts can be uploaded via the settings modal (⚙️ → Adici
 | Setting | Description |
 |---|---|
 | Adicionar fonte (.otf) | Upload a custom .otf font — adds it to the dropdown picker |
-| Limpar Fontes | Removes all uploaded fonts, reverts to bundled set |
 | Plano de fundo geral do site | Custom background image for the whole page |
 | Fundo da área onde as runas aparecem | Custom background for the translation output area |
-| Redefinir ao padrão | Clears all background images |
+| Limpar Fontes | Removes every font (bundled + uploaded) except "Padrão (Arial)" |
+| Redefinir ao padrão | Clears all background images and restores the bundled fonts |
 
-All settings persist in localStorage and are restored on the next page load.
+All settings persist (via `window.storage` when embedded, falling back to `localStorage` on a normal deployment like GitHub Pages) and are restored on the next page load.
 
 ---
 
 ## Interaction
 
 - **Click a fraction** to flip its top and bottom letters (swap their positions). Click again to revert. Fractions containing finito (`#`) or corte (`-`) cannot be flipped.
-- **Limpar button** (under the text input) resets all flips.
-- The input panel fades out after 5 seconds of inactivity and reappears on any interaction.
+- **Limpar button** (next to the "Texto" label) clears the input field.
+- When the page is scrolled down, the input panel fades out after 3 seconds of inactivity and reappears on typing or scrolling. At the top of the page it never fades.

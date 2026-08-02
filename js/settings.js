@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { storageGet, storageSet } from './storage.js';
-import { addUploadedFont, clearUploadedFonts } from './fonts.js';
+import { addUploadedFont, clearUploadedFonts, restoreBundledFonts } from './fonts.js';
 
 let siteSettings = { bgSite: null, bgTranslator: null };
 
@@ -105,13 +105,14 @@ export async function initSettings() {
   wireBackgroundField('bgSite',       'bgSiteFile');
   wireBackgroundField('bgTranslator', 'bgTranslatorFile');
 
-  // ----- Reset backgrounds -----
+  // ----- Reset backgrounds (and restore bundled fonts) -----
   document.getElementById('bgResetBtn').addEventListener('click', async () => {
     applyBackgroundDirect('bgSite',       null);
     applyBackgroundDirect('bgTranslator', null);
     siteSettings.bgSite       = null;
     siteSettings.bgTranslator = null;
     await persistSiteSettings();
+    await restoreBundledFonts();
   });
 
   // ----- Load saved preferences and apply -----

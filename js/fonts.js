@@ -121,15 +121,38 @@ export async function clearUploadedFonts() {
   // Revert to default (Arial)
   applyFont(null);
 
-  // Clear persisted uploads and active selection
+  // Clear persisted uploads and active selection, and remember
+  // that bundled fonts were cleared so they don't come back on reload
   storageSet('uploadedFontsV1', JSON.stringify([])).catch(() => {});
+  storageSet('activeFontFamily', '').catch(() => {});
+  storageSet('fontsCleared', '1').catch(() => {});
+}
+
+/* ---------- bring back the fonts shipped with the project ---------- */
+export async function restoreBundledFonts() {
+  const uploaded = fonts.filter(f => f.src && f.src.startsWith('data:'));
+  fonts = [...BUNDLED_FONTS, ...uploaded];
+
+  rebuildFontFaces();
+  rebuildSelect();
+  applyFont(null);
+
+  storageSet('fontsCleared', '0').catch(() => {});
   storageSet('activeFontFamily', '').catch(() => {});
 }
 
 /* ---------- init ---------- */
 export async function initFonts() {
-  // Register bundled @font-faces
-  rebuildFontFaces();
+  // Check if the user previously cleared everything down to just "Padrão"
+  let cleared = false;
+  try { cleared = (await storageGet('fontsCleared')) === '1'; } catch (e) { /* ignore */ }
+
+  if (cleared) {
+    fonts = [BUNDLED_FONTS[0]];
+  } else {
+    // Register bundled @font-faces
+    rebuildFontFaces();
+  }
 
   // Load persisted uploaded fonts and merge into list
   try {

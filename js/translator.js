@@ -202,7 +202,6 @@ export function renderTranslator() {
   const raw = document.getElementById('wordInput').value;
   const out = document.getElementById('output');
   out.innerHTML = '';
-  flipOverrides = Object.assign({}, flipOverrides); // keep existing flips
 
   if (!raw.trim()) {
     out.innerHTML = '';
