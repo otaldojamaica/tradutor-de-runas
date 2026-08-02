@@ -1,0 +1,365 @@
+:root{
+    --bg-site: url('background.jpeg');
+    --bg-canvas: var(--bg-site);
+    --bg-translator: var(--bg-site);
+    --ink: #1c150e;
+    --ink-soft: #3a2f22;
+    --panel-bg: rgba(255, 250, 238, 0.55);
+    --panel-border: rgba(40, 30, 20, 0.35);
+    --site-font: 'Cinzel', serif;
+    --site-font-weight: 700;
+  }
+  *{box-sizing:border-box;}
+  html{
+    background-image: var(--bg-site);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #cbb98f;
+    min-height: 100vh;
+  }
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: var(--site-font);
+    font-weight: var(--site-font-weight);
+    color: var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 24px 14px 60px;
+  }
+  .site-logo{
+    display:block;
+    width: min(560px, 82vw);
+    height: auto;
+    margin: 4px auto 26px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18));
+  }
+  h1{
+    font-family: var(--site-font);
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    text-align:center;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.35);
+  }
+  .subtitle{
+    font-family: var(--site-font);
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+    text-align:center;
+  }
+  .tabs{
+    display:flex;
+    gap:4px;
+    margin-bottom: 18px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(3px);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab-btn{
+    background:transparent;
+    border:none;
+    color: var(--ink-soft);
+    padding: 8px 18px;
+    font-family: var(--site-font);
+    letter-spacing: 0.5px;
+    font-size:0.82rem;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background: var(--ink);
+    color: #f2e9d5;
+    font-weight:bold;
+  }
+  .view{ width:100%; max-width: 1400px; display:none; flex-direction:column; align-items:center; }
+  .view.active{ display:flex; }
+
+  .panel{
+    width:100%;
+    max-width: 1300px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 4px 6px 22px;
+    margin-bottom: 6px;
+    position: sticky;
+    top: 14px;
+    z-index: 200;
+    transition: opacity 0.5s ease;
+  }
+  .panel.idle{ opacity: 0.22; }
+  .panel-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom: 8px;
+  }
+  .panel-header label{ margin-bottom: 0; }
+  .panel-header button{
+    background: transparent;
+    border: none;
+    padding: 4px 2px;
+    font-family: var(--site-font);
+    font-weight: var(--site-font-weight);
+    font-size: 0.88rem;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+    text-decoration: none;
+    transform: none;
+  }
+  .panel-header button:hover{ color: #7a1e1e; background:transparent; border:none; }
+  label{ display:block; font-family:var(--site-font); font-weight: var(--site-font-weight); font-size: 0.88rem; color: var(--ink); margin-bottom: 6px; letter-spacing: 0.5px; }
+  input[type=text]{
+    width:100%; padding: 8px 4px 10px; font-size: 1.15rem;
+    background: transparent; border: none;
+    border-radius: 0;
+    color: var(--ink); font-family: var(--site-font); font-weight: var(--site-font-weight);
+  }
+  input[type=text]:focus{ outline: none; }
+  input[type=text]::placeholder{ color: var(--ink-soft); opacity: 0.5; }
+
+  /* Área de tradução: interior usa a MESMA textura do fundo da página
+     (background-attachment:fixed) com vinheta envelhecida. A borda é um
+     SVG desenhado à mão (duas linhas levemente sobrepostas, como quem
+     risca duas vezes no mesmo traço), em vez de um retângulo perfeito. */
+  .canvas-wrap{
+    position: relative;
+    width:100%; max-width: 1300px;
+    background-image:
+      radial-gradient(ellipse at center, rgba(20,10,0,0) 45%, rgba(35,20,8,0.32) 100%),
+      var(--bg-translator);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: scroll, fixed;
+    filter: sepia(0.22) contrast(1.06) saturate(1.05);
+    border-radius: 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+    margin-top: 34px;
+    padding: 65px 40px; min-height: 340px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hand-border{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    overflow: visible;
+    pointer-events:none;
+    z-index: 1;
+  }
+  .hand-border path{ fill:none; stroke: var(--ink); }
+  .hand-border .hb-main{ stroke-width: 2.4; opacity: 0.85; }
+  .hand-border .hb-echo{ stroke-width: 1.3; opacity: 0.4; }
+  #output{ position:relative; z-index: 2; }
+  #output{ display:flex; flex-wrap:wrap; align-items:center; gap: 26px; justify-content:center; max-width:100%; }
+  .word-group{ display:flex; align-items:center; gap: 6px; flex-wrap:wrap; row-gap: 14px; max-width:100%; justify-content:center; }
+  .frac{ display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+  .frac svg{ display:block; }
+  .frac .glyph-top, .frac .glyph-bottom{
+    stroke: var(--ink); fill:none; stroke-width:7; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .frac .glyph-sol{
+    stroke: var(--ink); fill:none; stroke-width:6; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .frac .bar{ stroke: var(--ink); stroke-width:5; stroke-linecap:round; }
+  .frac:hover .glyph-top, .frac:hover .glyph-bottom{ stroke: #7a1e1e; }
+  /* Letter text — uses the imported OTF font when set, Arial as fallback.
+     font-size is 44 viewBox units, which fits comfortably inside each
+     half-slot (90 units) without vertical squashing.
+     No scale(1,0.46) is applied to these elements — aspect ratio is native. */
+  .frac .glyph-text{
+    fill: var(--ink); stroke: none;
+    font-family: var(--translator-font, Arial, sans-serif);
+    font-size: 44px;
+    font-weight: 600;
+  }
+  .frac:hover .glyph-text{ fill: #7a1e1e; }
+  /* Singles have no cursor affordance (not flippable) */
+  .frac.single{ cursor: default; }
+  .controls{ display:flex; gap: 10px; margin-top: 12px; flex-wrap:wrap; justify-content:center; }
+  button{
+    background: rgba(255,255,255,0.25); color: var(--ink); border: 1px solid var(--panel-border);
+    padding: 9px 16px; border-radius: 14px; font-family: var(--site-font); font-size: 0.75rem;
+    letter-spacing: 0.4px; cursor:pointer;
+    transform: rotate(-0.6deg);
+    transition: transform 0.15s ease;
+  }
+  button:nth-child(2n){ transform: rotate(0.6deg); }
+  button:hover{ border-color: var(--ink); background: rgba(255,255,255,0.4); transform: rotate(0deg); }
+  button.primary{ background: var(--ink); color:#f2e9d5; font-weight:bold; }
+
+  /* ---------- Font picker (top-right) ---------- */
+  .font-picker{
+    position: fixed;
+    top: 16px;
+    right: 18px;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #fontSelect{
+    background: var(--panel-bg);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: var(--site-font);
+    font-size: 0.72rem;
+    padding: 7px 32px 7px 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    /* custom caret arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%231c150e'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 8px;
+    max-width: 200px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: border-color 0.15s;
+  }
+  #fontSelect:hover{ border-color: var(--ink); }
+  #fontSelect:focus{ border-color: var(--ink); }
+
+  /* ---------- Botão de engrenagem + modal de configurações ---------- */
+  .gear-btn{
+    width: 46px; height: 46px;
+    flex-shrink: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--panel-bg);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--panel-border);
+    color: #000;
+    font-size: 1.4rem;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    cursor: pointer;
+    transform: none;
+    transition: transform 0.2s ease;
+  }
+  .gear-btn svg{ width: 26px; height: 26px; display:block; }
+  .gear-btn:hover{ transform: rotate(25deg); }
+
+  .modal-overlay{
+    display:none;
+    position: fixed; inset: 0;
+    background: rgba(20,15,10,0.55);
+    z-index: 600;
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    width: 92%; max-width: 560px;
+    max-height: 84vh;
+    background: rgba(255, 250, 238, 0.06);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 22px 24px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-scroll{
+    overflow-y: auto;
+    padding-right: 4px;
+    flex: 1;
+    min-height: 0;
+  }
+  .modal-box::before{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('modal-paper.jpg?v=2');
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .modal-box > *{ position: relative; z-index: 1; }
+  .modal-close{
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    font-size: 1rem;
+    transform: none;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 20;
+    pointer-events: auto;
+  }
+  .modal-close:hover{ background: rgba(0,0,0,0.06); transform: none; }
+  .modal-close::before, .modal-close::after{
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 14px; height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+  .modal-close::before{ transform: translate(-50%, -50%) rotate(45deg); }
+  .modal-close::after{ transform: translate(-50%, -50%) rotate(-45deg); }
+  .modal-title{
+    font-family: var(--site-font);
+    font-size: 1.3rem;
+    color: var(--ink);
+    text-align:center;
+    margin-bottom: 14px;
+  }
+  .modal-view{ display:none; flex-direction:column; gap: 18px; }
+  .modal-view.active{ display:flex; }
+
+  .bg-field{
+    display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .bg-field:last-of-type{ border-bottom:none; }
+  .bg-field-label{
+    font-family:var(--site-font); font-weight: var(--site-font-weight);
+    font-size: 0.82rem; color: var(--ink); letter-spacing:0.4px;
+    text-align:left;
+  }
+  .icon-upload-btn{
+    position: relative;
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .icon-upload-btn svg{ width: 18px; height: 18px; }
+  .icon-upload-btn:hover{ background: rgba(0,0,0,0.06); }
+  .icon-upload-btn input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer; font-size: 100px;
+  }
+
+  .modal-actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap: 18px;
+  }
+  .modal-actions button{ transform:none; }
+  .modal-actions button:hover{ transform:none; }
